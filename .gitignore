@@ -4,5 +4,8 @@
 .DS_Store
 
 # Build directory.
+bin
 build/
 out/
+
+CMakeLists.txt.user
