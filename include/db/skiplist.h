@@ -183,7 +183,8 @@ private:
 };
 
 template <typename Key, class Comparator>
-typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::NewNode(const Key& key, int height)
+typename SkipList<Key, Comparator>::Node*
+SkipList<Key, Comparator>::NewNode(const Key& key, int height)
 {
     char* const node_memory = arena_->AllocateAligned(sizeof(Node) + sizeof(std::atomic<Node*>) * (height - 1));
     return new (node_memory) Node(key);
@@ -271,8 +272,8 @@ bool SkipList<Key, Comparator>::KeyIsAfterNode(const Key& key, Node* n) const
 }
 
 template <typename Key, class Comparator>
-typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::FindGreaterOrEqual(const Key& key,
-        Node** prev) const
+typename SkipList<Key, Comparator>::Node*
+SkipList<Key, Comparator>::FindGreaterOrEqual(const Key& key, Node** prev) const
 {
     Node* x = head_;
     int level = GetMaxHeight() - 1;
@@ -296,7 +297,8 @@ typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::FindGreater
 }
 
 template <typename Key, class Comparator>
-typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::FindLessThan(const Key& key) const
+typename SkipList<Key, Comparator>::Node*
+SkipList<Key, Comparator>::FindLessThan(const Key& key) const
 {
     Node* x = head_;
     int level = GetMaxHeight() - 1;
@@ -317,8 +319,8 @@ typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::FindLessTha
 }
 
 template <typename Key, class Comparator>
-typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::FindLast()
-const
+typename SkipList<Key, Comparator>::Node*
+SkipList<Key, Comparator>::FindLast() const
 {
     Node* x = head_;
     int level = GetMaxHeight() - 1;
@@ -337,7 +339,8 @@ const
     }
 }
 
-template <typename Key, class Comparator> SkipList<Key, Comparator>::SkipList(Comparator cmp, Arena* arena)
+template <typename Key, class Comparator>
+SkipList<Key, Comparator>::SkipList(Comparator cmp, Arena* arena)
     : compare_(cmp),
       arena_(arena),
       head_(NewNode(0 /* any key will do */, kMaxHeight)),

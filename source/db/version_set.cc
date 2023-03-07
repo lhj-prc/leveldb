@@ -364,8 +364,7 @@ Status Version::Get(const ReadOptions& options, const LookupKey& k, std::string*
             state->last_file_read_level = level;
 
             state->s = state->vset->table_cache_->Get(*state->options, f->number,
-                       f->file_size, state->ikey,
-                       &state->saver, SaveValue);
+                       f->file_size, state->ikey, &state->saver, SaveValue);
             if (!state->s.ok()) {
                 state->found = true;
                 return false;
@@ -543,8 +542,7 @@ void Version::GetOverlappingInputs(int level, const InternalKey* begin, const In
                     user_begin = file_start;
                     inputs->clear();
                     i = 0;
-                } else if (end != nullptr &&
-                           user_cmp->Compare(file_limit, user_end) > 0) {
+                } else if (end != nullptr && user_cmp->Compare(file_limit, user_end) > 0) {
                     user_end = file_limit;
                     inputs->clear();
                     i = 0;
@@ -703,8 +701,7 @@ public:
             v->files_[level].reserve(base_files.size() + added_files->size());
             for (const auto& added_file : *added_files) {
                 // Add all smaller files listed in base_
-                for (std::vector<FileMetaData*>::const_iterator bpos =
-                         std::upper_bound(base_iter, base_end, added_file, cmp);
+                for (std::vector<FileMetaData*>::const_iterator bpos = std::upper_bound(base_iter, base_end, added_file, cmp);
                      base_iter != bpos; ++base_iter) {
                     MaybeAddFile(v, level, *base_iter);
                 }
@@ -927,8 +924,7 @@ Status VersionSet::Recover(bool* save_manifest)
     {
         LogReporter reporter;
         reporter.status = &s;
-        log::Reader reader(file, &reporter, true /*checksum*/,
-                           0 /*initial_offset*/);
+        log::Reader reader(file, &reporter, true /*checksum*/, 0 /*initial_offset*/);
         Slice record;
         std::string scratch;
         while (reader.ReadRecord(&record, &scratch) && s.ok()) {
@@ -938,9 +934,8 @@ Status VersionSet::Recover(bool* save_manifest)
             if (s.ok()) {
                 if (edit.has_comparator_ &&
                     edit.comparator_ != icmp_.user_comparator()->Name()) {
-                    s = Status::InvalidArgument(
-                            edit.comparator_ + " does not match existing comparator ",
-                        icmp_.user_comparator()->Name());
+                    s = Status::InvalidArgument(edit.comparator_ + " does not match existing comparator ",
+                                                icmp_.user_comparator()->Name());
                 }
             }
 
@@ -1009,8 +1004,7 @@ Status VersionSet::Recover(bool* save_manifest)
         }
     } else {
         std::string error = s.ToString();
-        Log(options_->info_log, "Error recovering version set with %d records: %s",
-            read_records, error.c_str());
+        Log(options_->info_log, "Error recovering version set with %d records: %s", read_records, error.c_str());
     }
 
     return s;
@@ -1163,8 +1157,7 @@ uint64_t VersionSet::ApproximateOffsetOf(Version* v, const InternalKey& ikey)
                 // "ikey" falls in the range for this table.  Add the
                 // approximate offset of "ikey" within the table.
                 Table* tableptr;
-                Iterator* iter =
-                    table_cache_->NewIterator(ReadOptions(), files[i]->number, files[i]->file_size, &tableptr);
+                Iterator* iter = table_cache_->NewIterator(ReadOptions(), files[i]->number, files[i]->file_size, &tableptr);
                 if (tableptr != nullptr) {
                     result += tableptr->ApproximateOffsetOf(ikey.Encode());
                 }
@@ -1267,9 +1260,8 @@ Iterator* VersionSet::MakeInputIterator(Compaction* c)
                 }
             } else {
                 // Create concatenating iterator for the files from this level
-                list[num++] =
-                    NewTwoLevelIterator(new Version::LevelFileNumIterator(icmp_, &c->inputs_[which]),
-                                  &GetFileIterator, table_cache_, options);
+                list[num++] = NewTwoLevelIterator(new Version::LevelFileNumIterator(icmp_, &c->inputs_[which]),
+                                                  &GetFileIterator, table_cache_, options);
             }
         }
     }
@@ -1335,8 +1327,7 @@ Compaction* VersionSet::PickCompaction()
 
 // Finds the largest key in a vector of files. Returns true if files is not
 // empty.
-bool FindLargestKey(const InternalKeyComparator& icmp, const std::vector<FileMetaData*>& files,
-                    InternalKey* largest_key)
+bool FindLargestKey(const InternalKeyComparator& icmp, const std::vector<FileMetaData*>& files, InternalKey* largest_key)
 {
     if (files.empty()) {
         return false;
@@ -1353,10 +1344,9 @@ bool FindLargestKey(const InternalKeyComparator& icmp, const std::vector<FileMet
 
 // Finds minimum file b2=(l2, u2) in level file for which l2 > u1 and
 // user_key(l2) = user_key(u1)
-FileMetaData* FindSmallestBoundaryFile(
-    const InternalKeyComparator& icmp,
-    const std::vector<FileMetaData*>& level_files,
-    const InternalKey& largest_key)
+FileMetaData* FindSmallestBoundaryFile(const InternalKeyComparator& icmp,
+                                       const std::vector<FileMetaData*>& level_files,
+                                       const InternalKey& largest_key)
 {
     const Comparator* user_cmp = icmp.user_comparator();
     FileMetaData* smallest_boundary_file = nullptr;
@@ -1445,8 +1435,7 @@ void VersionSet::SetupOtherInputs(Compaction* c)
             current_->GetOverlappingInputs(level + 1, &new_start, &new_limit, &expanded1);
             AddBoundaryInputs(icmp_, current_->files_[level + 1], &expanded1);
             if (expanded1.size() == c->inputs_[1].size()) {
-                Log(options_->info_log,
-                    "Expanding@%d %d+%d (%ld+%ld bytes) to %d+%d (%ld+%ld bytes)\n",
+                Log(options_->info_log, "Expanding@%d %d+%d (%ld+%ld bytes) to %d+%d (%ld+%ld bytes)\n",
                     level, int(c->inputs_[0].size()), int(c->inputs_[1].size()),
                     long(inputs0_size), long(inputs1_size), int(expanded0.size()),
                     int(expanded1.size()), long(expanded0_size), long(inputs1_size));

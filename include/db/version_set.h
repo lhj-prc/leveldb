@@ -42,8 +42,7 @@ class WritableFile;
 // Return the smallest index i such that files[i]->largest >= key.
 // Return files.size() if there is no such file.
 // REQUIRES: "files" contains a sorted list of non-overlapping files.
-int FindFile(const InternalKeyComparator& icmp,
-             const std::vector<FileMetaData*>& files, const Slice& key);
+int FindFile(const InternalKeyComparator& icmp, const std::vector<FileMetaData*>& files, const Slice& key);
 
 // Returns true iff some file in "files" overlaps the user key range
 // [*smallest,*largest].
@@ -167,8 +166,7 @@ private:
 class VersionSet
 {
 public:
-    VersionSet(const std::string& dbname, const Options* options,
-               TableCache* table_cache, const InternalKeyComparator*);
+    VersionSet(const std::string& dbname, const Options* options, TableCache* table_cache, const InternalKeyComparator*);
     VersionSet(const VersionSet&) = delete;
     VersionSet& operator=(const VersionSet&) = delete;
 

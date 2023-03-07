@@ -897,8 +897,7 @@ public:
     }
 
 private:
-    typename std::aligned_storage<sizeof(EnvType), alignof(EnvType)>::type
-    env_storage_;
+    typename std::aligned_storage<sizeof(EnvType), alignof(EnvType)>::type env_storage_;
 #if !defined(NDEBUG)
     static std::atomic<bool> env_initialized_;
 #endif  // !defined(NDEBUG)

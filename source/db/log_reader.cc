@@ -263,8 +263,7 @@ unsigned int Reader::ReadPhysicalRecord(Slice* result)
         buffer_.remove_prefix(kHeaderSize + length);
 
         // Skip physical record that started before initial_offset_
-        if (end_of_buffer_offset_ - buffer_.size() - kHeaderSize - length <
-            initial_offset_) {
+        if (end_of_buffer_offset_ - buffer_.size() - kHeaderSize - length < initial_offset_) {
             result->clear();
             return kBadRecord;
         }

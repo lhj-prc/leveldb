@@ -16,20 +16,6 @@
 
 namespace leveldb {
 
-#if 0
-static void DumpInternalIter(Iterator* iter)
-{
-    for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
-        ParsedInternalKey k;
-        if (!ParseInternalKey(iter->key(), &k)) {
-            std::fprintf(stderr, "Corrupt '%s'\n", EscapeString(iter->key()).c_str());
-        } else {
-            std::fprintf(stderr, "@ '%s'\n", k.DebugString().c_str());
-        }
-    }
-}
-#endif
-
 namespace {
 
 // Memtables and sstables that make the DB representation contain
@@ -48,8 +34,7 @@ public:
     enum Direction
     { kForward, kReverse };
 
-    DBIter(DBImpl* db, const Comparator* cmp, Iterator* iter, SequenceNumber s,
-           uint32_t seed)
+    DBIter(DBImpl* db, const Comparator* cmp, Iterator* iter, SequenceNumber s, uint32_t seed)
         : db_(db),
           user_comparator_(cmp),
           iter_(iter),
@@ -199,8 +184,7 @@ void DBIter::FindNextUserEntry(bool skipping, std::string* skip)
                 skipping = true;
                 break;
             case kTypeValue:
-                if (skipping &&
-                    user_comparator_->Compare(ikey.user_key, *skip) <= 0) {
+                if (skipping && user_comparator_->Compare(ikey.user_key, *skip) <= 0) {
                     // Entry hidden
                 } else {
                     valid_ = true;
@@ -252,8 +236,7 @@ void DBIter::FindPrevUserEntry()
         do {
             ParsedInternalKey ikey;
             if (ParseKey(&ikey) && ikey.sequence <= sequence_) {
-                if ((value_type != kTypeDeletion) &&
-                    user_comparator_->Compare(ikey.user_key, saved_key_) < 0) {
+                if ((value_type != kTypeDeletion) && user_comparator_->Compare(ikey.user_key, saved_key_) < 0) {
                     // We encountered a non-deleted value in entries for previous keys,
                     break;
                 }

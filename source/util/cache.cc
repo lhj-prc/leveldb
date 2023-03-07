@@ -111,6 +111,8 @@ public:
 private:
     // The table consists of an array of buckets where each bucket is
     // a linked list of cache entries that hash into the bucket.
+    // list_是一个指针数组(二维指针), 在增删改查操作时都需要用到二维指针, 理解困难
+    // 如果list_是一个非指针数组(头部数据不用,只用指针), 在增删改查操作时只需要用到一维指针, 理解方便
     uint32_t length_;
     uint32_t elems_;
     LRUHandle** list_;
@@ -121,7 +123,9 @@ private:
     LRUHandle** FindPointer(const Slice& key, uint32_t hash) {
         LRUHandle** ptr = &list_[hash & (length_ - 1)];
         while (*ptr != nullptr && ((*ptr)->hash != hash || key != (*ptr)->key())) {
-            ptr = &(*ptr)->next_hash;
+            // 取next_hash本身内存空间地址,
+            // 而不是next_hash指向的内存空间地址(如果next_hash为null则无效)
+            ptr = &(*ptr)->next_hash;   
         }
         return ptr;
     }
@@ -140,7 +144,7 @@ private:
                 LRUHandle* next = h->next_hash;
                 uint32_t hash = h->hash;
                 LRUHandle** ptr = &new_list[hash & (new_length - 1)];
-                h->next_hash = *ptr;
+                h->next_hash = *ptr;    // 头插法, 旧链表的数据被逆序放入新链表
                 *ptr = h;
                 h = next;
                 count++;
@@ -258,6 +262,8 @@ void LRUCache::LRU_Remove(LRUHandle* e)
 void LRUCache::LRU_Append(LRUHandle* list, LRUHandle* e)
 {
     // Make "e" newest entry by inserting just before *list
+    // 在list双链表的最后插入节点e, 那么e也就是list的前一个
+    // list <=> a <=> b <=> c <=> d <=> e <=> list
     e->next = list;
     e->prev = list->prev;
     e->prev->next = e;
@@ -376,7 +382,8 @@ public:
         }
     }
     ~ShardedLRUCache() override {}
-    Handle* Insert(const Slice& key, void* value, size_t charge, void (*deleter)(const Slice& key, void* value)) override {
+    Handle* Insert(const Slice& key, void* value, size_t charge,
+                   void (*deleter)(const Slice& key, void* value)) override {
         const uint32_t hash = HashSlice(key);
         return shard_[Shard(hash)].Insert(key, hash, value, charge, deleter);
     }

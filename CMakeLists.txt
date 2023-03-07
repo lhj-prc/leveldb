@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "-g -rdynamic")
 #set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 #set(EXECUTABLE_OUTPUT_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
+add_definitions(-DNDEBUG)
 add_definitions(-DLEVELDB_PLATFORM_POSIX)
 include_directories(include)
 aux_source_directory(source/util SOURCE)
